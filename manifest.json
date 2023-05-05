@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "URL GETTERS",
+    "version": "1.0",
+    "description": "Get URLS from web page",
+    "web_accessible_resources": [
+        {
+            "resources": [ "data/*.json" ],
+            "matches": [ "https://moodle.datumacademy.com/*" ]
+        }
+    ],
+    "permissions": [
+        "contextMenus"
+    ],
+    "content_scripts": [{
+        "js": ["scripts/content.js"],
+        "run_at": "document_start",
+        "matches": [
+            "https://moodle.datumacademy.com/*"
+        ]
+    }]
+}

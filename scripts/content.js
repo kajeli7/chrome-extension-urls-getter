@@ -15,13 +15,13 @@ console.log(`YOUR ARE SAVING URLS at ${new Date()}`);
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    function getInterestingData() {
+    async function getInterestingData() {
         
         if (document.querySelectorAll(".video-js").length == 0) {
             showText("No videos found");
             return;
         }
-        document.querySelectorAll(".video-js").forEach(elem => {
+        for (const elem of document.querySelectorAll(".video-js")) {
             var parse = JSON.parse(elem.getAttribute("data-setup-lazy"));
             if (parse && parse["sources"] && parse["sources"].length == 1) {
                 const urlSrc =  parse["sources"][0]["src"];
@@ -33,12 +33,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     // INFO: Saving all data
                     const title = document.querySelector("h2").innerText;
                     const moduleName = getModuleName();
-                    saveURLS({url: regex.exec(urlSrc)[0], title: title, module: moduleName})
+                    await saveURLS({url: regex.exec(urlSrc)[0], title: title, module: moduleName})
                 }
             } else {
                 showText("No urls found");
             }
-        });
+        }
     }
 
     function getModuleName() {

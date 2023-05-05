@@ -1,16 +1,20 @@
 {
     "manifest_version": 3,
-    "name": "URL GETTERS",
+    "name": "URLs GETTER",
     "version": "1.0",
-    "description": "Get URLS from web page",
+    "description": "Get Youtube URLS from web page",
     "web_accessible_resources": [
         {
             "resources": [ "data/*.json" ],
             "matches": [ "https://moodle.datumacademy.com/*" ]
         }
     ],
+    "background": {
+        "service_worker": "scripts/service_worker.js"
+    },
     "permissions": [
-        "contextMenus"
+        "contextMenus",
+        "storage"
     ],
     "content_scripts": [{
         "js": ["scripts/content.js"],

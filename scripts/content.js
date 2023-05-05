@@ -1,9 +1,15 @@
 /**
- * Whenever you change this file, you need to reload the extension throught: chrome://extensions/
+ * Whenever you change this file, you need to reload the extension through: chrome://extensions/
  */
 
 const URLS_STORAGE = 'URLS_STORAGE';
 const TABLE_CONTENTS_STORAGE = "TABLE_CONTENTS_STORAGE";
+const LS = {
+    getItem: async key => (await chrome.storage.local.get(key))[key],
+    setItem: (key, val) => chrome.storage.local.set({
+        [key]: val
+    }),
+};
 
 console.log(`YOUR ARE SAVING URLS at ${new Date()}`);
 
@@ -37,29 +43,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getModuleName() {
         const navBar = document.querySelector("#page-navbar");
-        const listContainer = document.querySelector("ol");
+        const listContainer = navBar.querySelector("ol");
         let moduleName = "";
         listContainer.querySelectorAll("li").forEach(li => {
             const span = li.querySelector("a span");
             if(span) {
                 const text = span.textContent;
                 if(text && text.toLocaleLowerCase().includes("module")) moduleName = text;
-                if(text && text.toLocaleLowerCase().includes("introduction")) moduleName = "Module 0";
+                if(text && text.toLocaleLowerCase().includes("introduction") && moduleName == "") moduleName = "Module 0";
             }
         });
         return moduleName;
     }
 
-    function saveURLS(data) {
-        let urls = JSON.parse(localStorage.getItem(URLS_STORAGE));
+    async function saveURLS(data) {
+        let urls = await LS.getItem(URLS_STORAGE);
         if (urls) {
+            urls = JSON.parse(urls);
             if(urls.filter(row => row.url === data.url).length == 0) {
                 urls.push(data);
             }
         } else {
             urls = [data]
         }
-        localStorage.setItem(URLS_STORAGE, JSON.stringify(urls));
+        await LS.setItem(URLS_STORAGE, JSON.stringify(urls));
     }
 
     function showText(message) {
@@ -94,31 +101,18 @@ document.addEventListener("DOMContentLoaded", () => {
         
     }
 
-    function saveTableContents(data) {
-        let urls = JSON.parse(localStorage.getItem(TABLE_CONTENTS_STORAGE));
+    async function saveTableContents(data) {
+        let urls = await LS.getItem(TABLE_CONTENTS_STORAGE);
         if (urls) {
+            urls = JSON.parse(urls);
             if(urls.filter(row => row.module === data.module).length == 0) {
                 urls.push(data);
             }
         } else {
             urls = [data]
         }
-        localStorage.setItem(TABLE_CONTENTS_STORAGE, JSON.stringify(urls));
+        await LS.setItem(TABLE_CONTENTS_STORAGE, JSON.stringify(urls));
     }
-
-    function transFormToCSV(data) {
-        
-    }
-
-    function downloadLocalStorage() {
-        const file = `data/cybersecurite_videos.json`;
-        fetch(chrome.runtime.getURL(file))
-        .then((response) => response.json())
-        .then((json) => console.log(json))
-        .catch(error => showText("Error lors du téléchargement du JSON"))
-    }
-
     getInterestingData();
     getModuleTableOfContents();
-    downloadLocalStorage();
 })
